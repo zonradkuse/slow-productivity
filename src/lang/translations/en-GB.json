@@ -1,0 +1,19 @@
+{
+    "app": {
+        "title": "Slow Productivity"
+    },
+    "settings": {
+        "title": "Settings",
+        "lang": "Language"
+    },
+    "projects": {
+        "title": "Projects"
+    },
+    "goals": {
+        "title": "Goals"
+    },
+    "tasks": {
+        "title": "Tasks"
+    },
+    "home": "Home"
+}

@@ -1,50 +1,77 @@
 <script lang="ts">
-  import TaskEdit from "$lib/components/tasks/TaskEdit.svelte";
-  import Modal from "$lib/components/Modal.svelte";
+    import TaskEdit from "$lib/components/tasks/TaskEdit.svelte";
+    import Modal from "$lib/components/Modal.svelte";
     import TaskList from "$lib/components/tasks/TaskList.svelte";
-    import { db, TaskPriority, type Task } from "$lib/store/db/db";
+    import { projectsDb, Priority, type Task, type Project } from "$lib/store/db/db";
     import { liveQuery } from "dexie";
+    import { getCurrentUrlSearchParams } from "$lib/utils/routing";
 
-    let urlParams: {[key: string]: string[]} = {}
+    const PARAM_PROJECT_ID = "projectId"
+
+    let urlParams: URLSearchParams = getCurrentUrlSearchParams()
     
-    const allTasks = liveQuery( async () => {
-        const tasks = await db.tasks.orderBy("priority").reverse().toArray();
+    let selectedProjectId : number | undefined = undefined;
+    if (urlParams.has(PARAM_PROJECT_ID)) {
+        selectedProjectId = parseInt(urlParams.get(PARAM_PROJECT_ID)!)
+    }
 
-        return tasks;
+    const filteredTasks = liveQuery( async () => {
+        const tasks = await projectsDb
+            .tasks
+            .orderBy("priority")
+            .reverse()
+            .filter((t) => !t.done)
+            .filter((t) => !selectedProjectId || t.projectId == selectedProjectId)
+            .toArray();
+
+        const tasksDone = await projectsDb
+            .tasks
+            .orderBy("priority")
+            .reverse()
+            .filter((t) => t.done)
+            .filter((t) => !selectedProjectId || t.projectId == selectedProjectId)
+            .toArray();
+
+        return [...tasks, ...tasksDone];
     });
 
     let addingTask = $state(false);
 
     const emptyTask = {
-        id: -1,
+        id: -1, // this is actually undefined later, refactor me
         done: false,
         estimatedHours: 0,
-        priority: TaskPriority.Medium,
+        priority: Priority.Medium,
         short_description: "New task",
         description: "More text"
     }
 
     // TODO this add functionality should be in the tasks view as there may be multiple lists in view that apply different filters
     async function addTask(task: Task) {
-        const id = await db.tasks.add({
+        const id = await projectsDb.tasks.add({
             ...task,
-            id: undefined,
+            projectId: selectedProjectId,
+            id: undefined, // TODO this is ugly and only necessary because the id will be set by the DB
         });
 
-        addingTask = false;
+        hideTaskEdit();
     }
 
     function showTaskEdit() {
         addingTask = true;
     }
 
+    function hideTaskEdit() {
+        addingTask = false;
+    }
+
 </script>
 
-<Modal isOpen={addingTask} closeModal={() => {addingTask = false;}}>
-    <TaskEdit task={emptyTask} onclose={() => {addingTask = false;}} onsave={() => {addTask(emptyTask)}} />
+<Modal isOpen={addingTask} closeModal={hideTaskEdit}>
+    <TaskEdit task={emptyTask} onclose={hideTaskEdit} onsave={() => {addTask(emptyTask)}} />
 </Modal>
         
-<TaskList title="All Tasks" tasks={allTasks} />
+<TaskList title="All Tasks" tasks={filteredTasks} />
 
 <button class="btn-add-task" onclick={showTaskEdit}>
     + Add Task

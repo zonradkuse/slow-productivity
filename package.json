@@ -19,6 +19,7 @@
     "dexie": "^4.0.11",
     "svelte": "^5.17.5",
     "svelte-check": "^4.1.4",
+    "svelte-i18n": "^4.0.1",
     "typescript": "~5.7.2",
     "vite": "^6.0.11",
     "vite-plugin-pwa": "^0.21.1",

@@ -16,7 +16,7 @@ export default defineConfig({
     },
 
     manifest: {
-      id: "slow.productivity.nl.familie-neuhaus.dev",
+      id: "slow-productivity.localhost",
       name: 'Slow Productivity',
       short_name: 'Slow Productivity',
       description: 'Slow Productivity',
@@ -37,12 +37,13 @@ export default defineConfig({
       type: 'module',
     }
   })],
-  server: {
-    allowedHosts: ['dev1.nl.familie-neuhaus.dev', '.dev']
-  },
+  // server: {
+  //   allowedHosts: ['localhost']
+  // },
   resolve: {
     alias: {
       $lib: path.resolve("./src/lib"),
+      $lang: path.resolve("./src/lang"),
     },
   },
 })

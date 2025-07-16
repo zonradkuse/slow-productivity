@@ -1,5 +1,6 @@
 <script lang="ts">
   import "./app.css";
+  import { _, isLoading } from './lang/i18n'
 
   import routes from "./routes";
 
@@ -21,24 +22,25 @@
 
 </script>
 
-
+{#if $isLoading}
+  ...
+{:else}
 <header class="bg-lime-700 text-white p-4 flex justify-between items-center">
   <button class="md:hidden shadow-lg text-white" onclick={toggleAsideVisibility}>
       ☰
   </button>
-  <h1 class="text-xl font-bold">Slow Productivity</h1>
+  <h1 class="text-xl font-bold">{$_("app.title")}</h1>
 </header>
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div class="flex flex-1" onclick={closeAside}>
     <!-- Sidebar -->
-    <aside id="sidebar" class="bg-gray-700 text-white w-64 h-full space-y-4 fixed transform md:-translate-x-0 transition-transform" class:-translate-x-full={sideMenuClosed}>
+    <aside id="sidebar" class="bg-gray-700 text-white w-64 h-full space-y-4 fixed transform md:-translate-x-0 transition-transform z-40" class:-translate-x-full={sideMenuClosed}>
         <nav>
             <ul class="space-y-2">
-                <li><a href="#/" class="block p-4 hover:bg-gray-800" onclick={toggleAsideVisibility}>Dashboard</a></li>
-                <li><a href="#/test" class="block p-4 hover:bg-gray-800" onclick={toggleAsideVisibility}>Profile</a></li>
-                <li><a href="#/settings" class="block p-4 hover:bg-gray-800" onclick={toggleAsideVisibility}>Settings</a></li>
+                <li><a href="#/" class="block p-4 hover:bg-gray-800" onclick={toggleAsideVisibility}>{$_("home")}</a></li>
+                <li><a href="#/settings" class="block p-4 hover:bg-gray-800" onclick={toggleAsideVisibility}>{$_("settings.title")}</a></li>
             </ul>
         </nav>
     </aside>
@@ -50,10 +52,10 @@
 </div>
 
 <!-- Footer -->
-<footer class="bg-white fixed bottom-0 left-0 w-full flex justify-around border-t">
-    <a href="#/goals" class="btn bg-green-100">🏠 Goals</a>
-    <a href="#/projects" class="btn">🔍 Projects</a>
-    <a href="#/tasks" class="btn bg-amber-100">⚙️ Tasks</a>
+<footer class="bg-white fixed bottom-0 left-0 w-full flex justify-around border-t md:pl-64">
+    <a href="#/goals" class="btn bg-green-100">🏠 {$_("goals.title")}</a>
+    <a href="#/projects" class="btn">🔍 {$_("projects.title")}</a>
+    <a href="#/tasks" class="btn bg-amber-100">⚙️ {$_("tasks.title")}</a>
 </footer>
   
 <PWAInstall />
@@ -63,6 +65,7 @@
 <Toast />
 
 <NotificationRequest />
+{/if}
 
 <style lang="postcss">
   @reference "tailwindcss";

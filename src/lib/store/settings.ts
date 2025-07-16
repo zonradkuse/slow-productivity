@@ -1,21 +1,35 @@
 import { writable, type Writable } from "svelte/store";
+import { settingsDb } from "./db/db";
+import { Language, locale } from "$lang/i18n";
 
-let persistedRefreshCycle = localStorage.getItem("settings_refreshCycle");
+const keyRefreshCycle = "refreshCycle";
+const keyIsNotificationsRequested = "notificationsRequested";
+const keySelectedLanguage = "language";
+const keyMaxActiveProjects = "maxActiveProjects";
 
-const refreshCycleDefaultValue = persistedRefreshCycle ? Number.parseInt(persistedRefreshCycle) : 1
-export const updateCheckIntervalInMinutes: Writable<number> = writable(refreshCycleDefaultValue);
+export let updateCheckIntervalInMinutes: Writable<number> = writable();
+export let notificationsRequested: Writable<boolean> = writable();
+export let language: Writable<Language> = writable();
+export let maxActiveProjects: Writable<number> = writable();
 
-updateCheckIntervalInMinutes.subscribe((num) => {
-    localStorage.setItem("settings_refreshCycle", num.toString());
+language.subscribe((v) => {
+    locale.set(v);
 });
 
+initSettingsWritableWithDefaultValue(updateCheckIntervalInMinutes, keyRefreshCycle, 1);
+initSettingsWritableWithDefaultValue(notificationsRequested, keyIsNotificationsRequested, false);
+initSettingsWritableWithDefaultValue(language, keySelectedLanguage, Language.enGB);
+initSettingsWritableWithDefaultValue(maxActiveProjects, keyMaxActiveProjects, 3);
 
-let notificationsRequestedStore = localStorage.getItem("settings_notificationsRequested");
+async function initSettingsWritableWithDefaultValue<T>(w: Writable<T>, settingsKey: string, defaultValue: T): Promise<Writable<T>> {
+    const currentSetting = await settingsDb.settings.where("key").equals(settingsKey).first();
+    const writableValue = currentSetting ? currentSetting.value : defaultValue;
 
-const notificationsRequestedDefaultStore = notificationsRequestedStore ? notificationsRequestedStore === "true" : false
-export const notificationsRequested: Writable<boolean> = writable(notificationsRequestedDefaultStore);
+    w.set(writableValue);
+    w.subscribe((val) => {
+        settingsDb.settings.put({key: settingsKey, value: val});
+    });
 
-notificationsRequested.subscribe((b) => {
-    localStorage.setItem("settings_notificationsRequested", b.toString());
-});
+    return w;
+}
 

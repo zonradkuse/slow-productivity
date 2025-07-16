@@ -1,0 +1,19 @@
+{
+    "app": {
+        "title": "Langsame Produktivität"
+    },
+    "settings": {
+        "title": "Einstellungen",
+        "lang": "Sprache (Language)"
+    },
+    "projects": {
+        "title": "Projekte"
+    },
+    "goals": {
+        "title": "Ziele"
+    },
+    "tasks": {
+        "title": "Aufgaben"
+    },
+    "home": "Startseite"
+}

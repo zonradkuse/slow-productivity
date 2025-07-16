@@ -1,6 +1,6 @@
 <script lang="ts">
     import TaskEdit from "$lib/components/tasks/TaskEdit.svelte";
-  import { db, TaskPriority, type Task } from "$lib/store/db/db";
+  import { projectsDb, type Task } from "$lib/store/db/db";
   import { liveQuery } from "dexie";
 
     const editableTasks: {[key: number]: boolean} = $state({});
@@ -12,7 +12,7 @@
     }
 
     async function saveTask(task: Task) {
-        await db.tasks.update(task.id, task);
+        await projectsDb.tasks.update(task.id, task);
         closeEdit(task.id);
     }
 
@@ -21,11 +21,15 @@
     }
 
     function doDelete(id: number) {
-        db.tasks.delete(id);
+        projectsDb.tasks.delete(id);
     }
 
     function toggleTaskDone(task: Task) {
         task.done = !task.done;
+        if (task.done) {
+            task.lastMarkedDone = new Date();
+        }
+
         saveTask(task);
     }
 
@@ -41,7 +45,7 @@
     <ul class="space-y-3">
         <div class="space-y-3"></div>
         
-        {#each $tasks as task}
+        {#each $tasks as task (task.id)}
             {#if !editableTasks[task.id]}
             <li>
                 <label class="flex items-center space-x-3">

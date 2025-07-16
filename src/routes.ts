@@ -2,32 +2,63 @@ import Counter from '$lib/components/Counter.svelte'
 import Goals from '$lib/views/Goals.svelte';
 import Home from '$lib/views/Home.svelte';
 import Projects from '$lib/views/Projects.svelte';
+import RouterDebugView from '$lib/views/RouterDebugView.svelte';
 import Settings from '$lib/views/Settings.svelte';
 import Tasks from '$lib/views/Tasks.svelte';
+import type { Component } from 'svelte';
+
+export type Routes = {
+    [url: string]: Route
+}
+
+export interface RouteParam<T> {
+    name: string;
+    fromSting(val: string): T;
+}
+
+export type RouteAspect<T> = RouteParam<T> | string;
+
+export interface Route {
+    readonly component: Component;
+    readonly urlAspects: Array<RouteAspect<any>> ;
+}
+
+function getRouteFromString(component: Component, inp: string) {
+    const urlAspects : Array<RouteAspect<any>> = [];
+
+    const aspects = inp.split("/");
+    for (const aspect of aspects) {
+        if (aspect.startsWith("<") && aspect.endsWith(">")) {
+            // parameter found
+            const paramDescription = aspect.substring(1, aspect.length - 1)
+            const paramDescriptionParts = paramDescription.split(":");
+            if (paramDescriptionParts.length !== 2) throw new Error(`Route parameters must be typed but ${paramDescription} isn't`);
+
+            const parameterAspect : RouteParam<string> = {
+                name: paramDescriptionParts[0],
+                fromSting(val: string) {
+                    return val
+                },
+            }
+
+            urlAspects.push(parameterAspect);
+        } else {
+            urlAspects.push(aspect);
+        }
+    }
+
+    return {
+        component,
+        urlAspects
+    }
+}
 
 export default {
-    '#/test': {
-        name: "Counter",
-        component: Counter
-    },
-    '#/settings': {
-        name: "Settings",
-        component: Settings
-    },
-    '#/': {
-        name: "Home",
-        component: Home
-    },
-    '#/projects': {
-        name: "Projects",
-        component: Projects
-    },
-    '#/tasks': {
-        name: "Tasks",
-        component: Tasks
-    },
-    '#/goals': {
-        name: "Goals",
-        component: Goals
-    }
+    '#/test': getRouteFromString(Counter, "#/test"),
+    '#/settings': getRouteFromString(Settings, "#/settings"),
+    '#/': getRouteFromString(Home, "#/"),
+    '#/projects': getRouteFromString(Projects, "#/projects"),
+    '#/tasks': getRouteFromString(Tasks, "#/tasks"),
+    '#/goals': getRouteFromString(Goals, "#/goals"),
+    '#/router/<name:string>/<other:string>': getRouteFromString(RouterDebugView, '#/router/<name:string>/<other:string>')
 };

@@ -1,0 +1,18 @@
+{
+    "app": {
+        "title": "Produtividade Lenta"
+    },
+    "settings": {
+        "lang": "Idioma (Language)"
+    },
+    "projects": {
+        "title": "Projetos"
+    },
+    "goals": {
+        "title": "Metas"
+    },
+    "tasks": {
+        "title": "Tarefas"
+    },
+    "home": "Início"
+}
