@@ -41,6 +41,7 @@
             <ul class="space-y-2">
                 <li><a href="#/" class="block p-4 hover:bg-gray-800" onclick={toggleAsideVisibility}>{$_("home")}</a></li>
                 <li><a href="#/settings" class="block p-4 hover:bg-gray-800" onclick={toggleAsideVisibility}>{$_("settings.title")}</a></li>
+                <li><a href="#/pomodoro" class="block p-4 hover:bg-gray-800" onclick={toggleAsideVisibility}>{$_("pomodoro.title")}</a></li>
             </ul>
         </nav>
     </aside>

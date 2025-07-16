@@ -1,6 +1,7 @@
 import Counter from '$lib/components/Counter.svelte'
 import Goals from '$lib/views/Goals.svelte';
 import Home from '$lib/views/Home.svelte';
+import Pomodoro from '$lib/views/Pomodoro.svelte';
 import Projects from '$lib/views/Projects.svelte';
 import RouterDebugView from '$lib/views/RouterDebugView.svelte';
 import Settings from '$lib/views/Settings.svelte';
@@ -60,5 +61,6 @@ export default {
     '#/projects': getRouteFromString(Projects, "#/projects"),
     '#/tasks': getRouteFromString(Tasks, "#/tasks"),
     '#/goals': getRouteFromString(Goals, "#/goals"),
+    '#/pomodoro': getRouteFromString(Pomodoro, "#/pomodoro"),
     '#/router/<name:string>/<other:string>': getRouteFromString(RouterDebugView, '#/router/<name:string>/<other:string>')
 };
